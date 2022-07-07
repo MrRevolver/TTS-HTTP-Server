@@ -1,0 +1,11 @@
+certifi
+charset-normalizer
+idna
+PyYAML
+requests
+six
+transliterate
+typing_extensions
+urllib3
+numpy
+torch

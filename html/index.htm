@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+	<head>
+		<meta charset="utf-8"/> 
+		<title>Offline-neural-tts</title>
+	</head>
+	<body>
+  		<form method=post id=form>
+		   %(form)s
+			<div>
+				text: <textarea name=text></textarea>
+			</div>
+			<input type=submit />
+		</form>
+		<script>
+			document.getElementById("form").onsubmit = async (e) => {
+				e.preventDefault();
+				var data = {};
+				(new FormData(e.target)).forEach(function(value, key){
+					data[key] = value;
+				});
+				console.log(data);
+				var response = await fetch('/', {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify(data),
+				});
+			};
+		</script>
+	</body>
+</html>
