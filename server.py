@@ -1,8 +1,7 @@
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import unquote
 from cgi import parse_header, parse_multipart
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, unquote
 import json
 from tts import *
 
@@ -15,19 +14,42 @@ def start(serverPort=80, hostName='localhost'):
     class WebServer(BaseHTTPRequestHandler):
         with open(FILE_INDEX, 'r', encoding="utf-8") as f:
             home = f.read()
-            
-        def do_GET(self):
-            if '/favicon.ico' == self.path: 
-                self.send_response(404)
-                self.end_headers()
-                return
-            if len(self.path)>1: 
-                fname = self.tts({'text': unquote(self.path)[1:]})
+
+        def do_POST(self):
+            postdict = self.parse_POST()
+            if postdict.get('text'):
+                fname = self.tts(postdict)
+                print(fname)
                 with open(fname, 'rb') as f:
+                  self.send_response(200)
+                  self.send_header('Content-type', 'audio/wav')
+                  self.end_headers()
+                  self.wfile.write(f.read())
+                  #self.wfile.write(bytes(fname, 'utf-8'))
+            else:
+                self.send_response(301)
+                self.send_header('Location', '/')
+                self.end_headers()
+
+        def do_GET(self):
+            if len(self.path)>1:
+                props = parse_qs(unquote(self.path)[2:])
+                if "speak" in props:
+                    text = props["speak"]
+                    print(text[0])
+                    fname = self.tts({'text': text[0]})
+                    with open(fname, 'rb') as f:
+                        self.send_response(200)
+                        self.send_header('Content-type', 'audio/wav')
+                        self.end_headers()
+                        self.wfile.write(f.read())
+                if "speakers" in props:
                     self.send_response(200)
-                    self.send_header('Content-type', 'audio/wav')
+                    self.send_header('Content-type', 'application/json')
                     self.end_headers()
-                    self.wfile.write(f.read())          
+                else:
+                    self.send_response(403)
+                    self.end_headers()
             else:
                 self.home_page()
                 
@@ -91,26 +113,6 @@ def start(serverPort=80, hostName='localhost'):
                 postvars[k] = {'on': True, 'off': False}.get(v,  int(v) if v.isdigit() else v )
                             
             return postvars    
-                       
-        def do_POST(self):
-            postdict = self.parse_POST()
-            if postdict.get('text'):
-                fname = self.tts(postdict)[len(DIR_CACH)+1:-4]
-                #self.send_response(200)
-                #self.end_headers()
-                #self.wfile.write(bytes(fname, 'utf-8'))
-                print(fname)
-                with open('/cach/' + fname + '.wav', 'rb') as f:
-                    self.send_response(200)
-                    self.send_header('Content-type', 'audio/wav')
-                    self.end_headers()
-                    self.wfile.write(bytes(f, 'utf-8'))
-
-            else:
-                self.send_response(301)
-                self.send_header('Location', '/')
-                self.end_headers()
-        
             
     webServer = HTTPServer((hostName, int(serverPort)), WebServer)
     webServer.serve_forever()

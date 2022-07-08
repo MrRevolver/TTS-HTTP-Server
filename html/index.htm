@@ -12,6 +12,7 @@
 			</div>
 			<input type=submit />
 		</form>
+    <embed src="bgsound.wav" hidden="true" autostart="true" loop="1">
 		<script>
 			document.getElementById("form").onsubmit = async (e) => {
 				e.preventDefault();
@@ -24,7 +25,15 @@
 					method: 'POST',
 					headers: {'Content-Type': 'application/json'},
 					body: JSON.stringify(data),
-				});
+				})
+        .then((response) => {
+          let blob = new Blob(response, { type: 'application/octet-stream' });
+          let blobUrl = URL.createObjectURL(blob);
+          window.audio = new Audio();
+          window.audio.src = blobUrl;
+          window.audio.controls = true;
+          document.body.appendChild(window.audio);
+        })
 			};
 		</script>
 	</body>
