@@ -141,10 +141,10 @@ class V3:
                 yo=False, 
                 abr=True,
                 rw=False):
-        print('in:', text)
+        print('Входящий текст:', text)
         bname = re.sub('[^\w\-_\.\+ ]', '_', text)
         fname = os.path.join(DIR_CACH, f'{bname}.wav') if path is None else path
-        print('save:', fname)
+        print('Кэш:', fname)
         if os.path.isfile(fname):
             if rw: 
                 os.remove(fname)
@@ -152,8 +152,8 @@ class V3:
                 Path(fname).touch()
                 return fname
         
-        ssml  = '<speak>\r\n%s</speak>' % fix(text)
-        print('out:', ssml)
+        ssml  = '<speak>%s</speak>' % fix(text)
+        print('Синтез:', fix(text))
         self.model.save_wav(ssml_text=ssml,
                             speaker=self.get_name(speaker),
                             sample_rate=sample_rate,
