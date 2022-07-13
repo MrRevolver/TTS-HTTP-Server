@@ -2,7 +2,8 @@
 Офлайн сервер синтеза речи на нейронных сетях
 
 > Спасибо команде Silero за [синтез](https://github.com/snakers4/silero-models)
-> Спасибо Kamnev Sergey за основу [сервера] (https://github.com/kamnsv/offline-neural-tts)
+
+> Спасибо Kamnev Sergey за [основу сервера](https://github.com/kamnsv/offline-neural-tts)
 
 ## Зависимости
 
@@ -22,13 +23,19 @@ python server.py [PORT] [HOST]
 
 ## Обращение
 
-### GET запрос синтеза
+### Запрос списка голосов
+
+Запрос: `http://[HOST]:[PORT]/?speakers`
+
+> **Ответ:** `["aidar", "baya", "eugene", "kseniya", "random", "xenia"]`
+
+### GET запрос на синтез
 
 Запрос: `http://[HOST]:[PORT]/?speak=[TEXT]` или `http://[HOST]:[PORT]/[TEXT]`
 
 > **Ответ:**  `header 'Content-type: audio/wav'`
 
-### POST запрос синтеза
+### POST запрос на синтез
 
 ```
 header 'Content-Type: application/json' 
@@ -47,9 +54,3 @@ header 'Content-Type: application/json'
 ### Страница тестирования POST
 
 Запрос: `http://[HOST]:[PORT]`
-
-### Запрос списка голосов
-
-Запрос: `http://[HOST]:[PORT]/?speakers`
-
-> **Ответ:** `["aidar", "baya", "eugene", "kseniya", "random", "xenia"]`
