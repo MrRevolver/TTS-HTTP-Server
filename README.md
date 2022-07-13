@@ -1,4 +1,4 @@
-# Веб-сервер синтеза речи Silero
+# Simple TTS HTTP-server
 Офлайн сервер синтеза речи на нейронных сетях
 
 > Спасибо команде Silero за [синтез](https://github.com/snakers4/silero-models)
