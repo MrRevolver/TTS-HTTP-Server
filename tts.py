@@ -48,12 +48,12 @@ def fabr(txt):
 
 # Экраинируем невоспроизводимые символы 
 def fecran(txt):
-    for i in '[]{}|/':
+    for i in '[]{}|':
         txt = txt.replace(i, f'\\{i}')
     return txt 
 
 # Подключаем словари и аббревиатуры
-def fix(txt, *, abr=True, word=True, full=True): 
+def fix(txt, *, abr=True, word=False, full=False): 
     txt = fecran(txt)
     if full:  txt = flegal(txt)
     if word:  txt = wlegal(txt)
@@ -142,8 +142,9 @@ class V3:
                 abr=True,
                 rw=False):
         print('Входящий текст:', text)
-        bname = re.sub('[^\w\-_\.\+ ]', '_', text)
-        fname = os.path.join(DIR_CACH, f'{bname}.wav') if path is None else path
+        bname = re.sub('[^\w\-_\.\+ ]', '_', text)[:100]
+        fspeaker = self.get_name(speaker)
+        fname = os.path.join(DIR_CACH, f'{fspeaker}_{bname}.wav') if path is None else path
         print('Кэш:', fname)
         if os.path.isfile(fname):
             if rw: 
@@ -155,7 +156,7 @@ class V3:
         ssml  = '<speak>%s</speak>' % fix(text)
         print('Синтез:', fix(text))
         self.model.save_wav(ssml_text=ssml,
-                            speaker=self.get_name(speaker),
+                            speaker=fspeaker,
                             sample_rate=sample_rate,
                             audio_path=fname,
                             put_accent=accent,

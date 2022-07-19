@@ -2,7 +2,7 @@
 <html lang="ru">
 	<head>
 		<meta charset="utf-8"/> 
-		<title>Offline-neural-tts</title>
+		<title>Call Office TTS</title>
 	</head>
 	<body>
   		<form method=post id=form>
@@ -12,6 +12,25 @@
 			</div>
 			<input type=submit />
 		</form>
+      <xmp>
+""+" перед глаcной дает на неё ударение(акцент)
+Пример с доп.опциями:
+<p>
+   Когда я просыпаюсь, <prosody rate="x-slow">я говорю довольно медленно</prosody>.
+   Пот+ом я начинаю говорить своим обычным голосом,
+   <prosody pitch="x-high"> а могу говорить тоном выше </prosody>,
+   или <prosody pitch="x-low">наоборот, ниже</prosody>.
+   Пот+ом, если повезет – <prosody rate="fast">я могу говорить и довольно быстро.</prosody>
+   А еще я умею делать паузы любой длины, например, две секунды <break time="2000ms"/>.
+   <p>
+     Также я умею делать паузы между параграфами.
+   </p>
+   <p>
+     <s>И также я умею делать паузы между предложениями</s>
+     <s>Вот например как сейчас</s>
+   </p>
+</p>"
+      </xmp>
 		<script>
 			document.getElementById("form").onsubmit = async (e) => {
 				e.preventDefault();

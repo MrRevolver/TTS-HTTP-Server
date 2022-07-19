@@ -135,7 +135,6 @@ def start(serverPort=80, hostName='localhost'):
                 postvars = parse_qs(encoded, encoding='utf-8')
             elif 'application/json' == ctype :
                 postvars = json.loads(encoded)
-            
             print("Получен POST запрос: " + json.dumps(postvars))
             logger.info("Получен POST запрос: " + json.dumps(postvars)) #json_res.replace("\n", "").replace("\r", ""))
 
