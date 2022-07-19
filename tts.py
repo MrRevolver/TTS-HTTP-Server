@@ -15,14 +15,13 @@ DIR_CACH = 'cach'
 if not os.path.isdir(DIR_CACH):
     os.mkdir(DIR_CACH)
     
-FILE_OPT  = os.path.join('yamls', 'options.yml')
-FILE_DICT = os.path.join('yamls', 'dict.yml')
+FILE_OPT  = os.path.join('options', 'options.yml')
 
 with open(FILE_OPT, 'r', encoding="utf-8") as y:   
     OPTIONS = yaml.safe_load(y)
 
 DEFAULT = OPTIONS['tts']
-PARAMS = OPTIONS['params']
+PARAMS  = OPTIONS['params']
 
 SAMPLE_RATE = DEFAULT.get('sample_rate', 48000)
 SPEAKER_V3 = DEFAULT.get('speaker', 'xenia')
@@ -53,41 +52,11 @@ def fecran(txt):
     return txt 
 
 # Подключаем словари и аббревиатуры
-def fix(txt, *, abr=True, word=False, full=False): 
+def fix(txt, *, abr=True): 
     txt = fecran(txt)
-    if full:  txt = flegal(txt)
-    if word:  txt = wlegal(txt)
     if abr:   txt = fabr(txt)
     return txt
-
-# Коллекция слов
-def wlegal(txt):
-    txtcls = re.sub('[^\w\-_\.\+ ]', '', txt)
-    words = txtcls.split(' ')
-    print(txtcls)
-    ilegals = {}
-    if os.path.isfile(FILE_DICT):
-        with open(FILE_DICT, 'r', encoding="utf-8") as y:   
-            ilegals = yaml.safe_load(y) 
-        w = ilegals.get('word', {})
-        
-        for i in range(len(words)):
-            if w.get(words[i]):
-                words[i] = w[words[i]]
-                
-    return ' '.join(words)
-
-# Коллеция выражений
-def flegal(txt):
-    ilegals = {}
-    if os.path.isfile(FILE_DICT):
-        with open(FILE_DICT, 'r', encoding="utf-8") as y:   
-            ilegals = yaml.safe_load(y) 
-        f = ilegals.get('full', {})
-        if f.get(txt):
-            return f[txt]    
-    return txt  
-            
+           
 class V3:
 
     def __init__(self):

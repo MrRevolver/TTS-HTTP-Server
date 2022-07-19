@@ -32,18 +32,13 @@ def start(serverPort=80, hostName='localhost'):
                   self.wfile.write(f.read())
                   print("Аудио отравлено POST-методом")
                   logger.info("Аудио отравлено POST-методом") 
-                  
                   #self.wfile.write(bytes(fname, 'utf-8'))
             else:
                 self.send_response(301)
                 self.send_header('Location', '/')
                 self.end_headers()
 
-        def do_GET(self):
-            if '/favicon.ico' == self.path: 
-                self.send_response(404)
-                self.end_headers()
-                return
+        def do_GET(self):               
             if len(self.path)>1:
                 props = parse_qs(unquote(self.path)[2:])
                 #print(props)
