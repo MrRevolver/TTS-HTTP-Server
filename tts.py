@@ -106,7 +106,7 @@ class V3:
     def __call__(self, text, path=None, 
                 speaker=SPEAKER_V3, 
                 sample_rate=SAMPLE_RATE, 
-                accent=True, 
+                accent=False, 
                 yo=False, 
                 abr=True,
                 rw=False):
