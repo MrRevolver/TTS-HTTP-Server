@@ -3,7 +3,9 @@ import torch
 import re
 import sys
 import yaml
+from transliterate import translit
 from pathlib import Path
+import num2text
 
 torch.set_grad_enabled(False)
 device = torch.device('cpu')
@@ -26,6 +28,25 @@ PARAMS  = OPTIONS['params']
 SAMPLE_RATE = DEFAULT.get('sample_rate', 48000)
 SPEAKER_V3 = DEFAULT.get('speaker', 'xenia')
 
+# Экраинируем невоспроизводимые символы 
+def fecran(txt):
+    for i in '[]{}|':
+        txt = txt.replace(i, f'\\{i}')
+    return txt 
+
+
+# Транслитерация
+def ftrans(txt):
+    return translit(txt, 'ru')
+
+# Меняем цифры на числительные
+def fnum(txt):
+    x = re.findall('[0-9]+', txt)
+    x.sort(reverse=True)
+    for i in x:
+        txt = txt.replace(i, num2text(int(i)))
+    return txt
+
 # Обработка аббревиатуры
 def fabr(txt):
     for abr in re.findall('[А-ЯЁ]{2,}', txt):
@@ -42,18 +63,12 @@ def fabr(txt):
             elif a == 'Й': aabara += 'ё'
             aabara = aabara.replace('ээээ', 'эээ')
         txt = txt.replace(abr, f'<prosody rate="fast"> {aabara} </prosody>')
-        
     return txt
 
-# Экраинируем невоспроизводимые символы 
-def fecran(txt):
-    for i in '[]{}|':
-        txt = txt.replace(i, f'\\{i}')
-    return txt 
-
-# Подключаем словари и аббревиатуры
-def fix(txt, *, abr=True): 
+def fix(txt, *, num=True, trans=True, abr=True): 
     txt = fecran(txt)
+    if trans: txt = ftrans(txt)
+    if num:   txt = fnum(txt)
     if abr:   txt = fabr(txt)
     return txt
            
