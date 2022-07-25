@@ -137,13 +137,22 @@ class V3:
                 Path(fname).touch()
                 return fname
         
-        ssml  = '<speak>%s</speak>' % fix(text)
-        print('Синтез:', fix(text))
-        self.model.save_wav(ssml_text=ssml,
-                            speaker=fspeaker,
-                            sample_rate=sample_rate,
-                            audio_path=fname,
-                            put_accent=accent,
-                            put_yo=yo)
+        if (ssml):
+            #ssml  = '<speak>%s</speak>' % fix(text)
+            print('Синтез SSML:', fix(text))
+            self.model.save_wav(ssml_text=fix(text),
+                                speaker=fspeaker,
+                                sample_rate=sample_rate,
+                                audio_path=fname,
+                                put_accent=accent,
+                                put_yo=yo)
+        else:
+            print('Синтез Text:', fix(text))
+            self.model.save_wav(text=fix(text),
+                                speaker=fspeaker,
+                                sample_rate=sample_rate,
+                                audio_path=fname,
+                                put_accent=accent,
+                                put_yo=yo)
         self.rotate() 
         return fname               
