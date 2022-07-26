@@ -6,7 +6,6 @@ Changed on 13.03.2016 by Artem Tiumentcev
 '''
 import decimal
 
-
 units = (
     u'ноль',
 

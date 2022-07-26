@@ -5,7 +5,7 @@ import sys
 import yaml
 from transliterate import translit
 from pathlib import Path
-import num2text
+from num2text import num2text
 
 torch.set_grad_enabled(False)
 device = torch.device('cpu')
@@ -34,17 +34,16 @@ def fecran(txt):
         txt = txt.replace(i, f'\\{i}')
     return txt 
 
-
 # Транслитерация
 def ftrans(txt):
     return translit(txt, 'ru')
 
 # Меняем цифры на числительные
 def fnum(txt):
-    x = re.findall('[0-9]+', txt)
+    x = re.findall('[0-9]+', str(txt))
     x.sort(reverse=True)
     for i in x:
-        txt = txt.replace(i, num2text(int(i)))
+        txt = str(txt).replace(i, num2text(int(i)))
     return txt
 
 # Обработка аббревиатуры
@@ -65,11 +64,12 @@ def fabr(txt):
         txt = txt.replace(abr, f'<prosody rate="fast"> {aabara} </prosody>')
     return txt
 
-def fix(txt, *, num=True, trans=True, abr=True): 
-    txt = fecran(txt)
-    if trans: txt = ftrans(txt)
-    if num:   txt = fnum(txt)
-    if abr:   txt = fabr(txt)
+def fix(txt, *, num=True, trans=True, abr=True):
+    if isinstance(txt, str):
+        txt = fecran(txt)
+        if trans: txt = ftrans(txt)
+        if abr:   txt = fabr(txt)
+    if num: txt = fnum(txt)
     return txt
            
 class V3:
@@ -121,12 +121,13 @@ class V3:
     def __call__(self, text, path=None, 
                 speaker=SPEAKER_V3, 
                 sample_rate=SAMPLE_RATE, 
+                ssml=False,
                 accent=False, 
                 yo=False, 
                 abr=True,
                 rw=False):
         print('Входящий текст:', text)
-        bname = re.sub('[^\w\-_\.\+ ]', '_', text)[:100]
+        bname = re.sub('[^\w_\. ]', '_', str(text))[:100]
         fspeaker = self.get_name(speaker)
         fname = os.path.join(DIR_CACH, f'{fspeaker}_{bname}.wav') if path is None else path
         print('Кэш:', fname)
