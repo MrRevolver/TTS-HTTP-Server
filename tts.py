@@ -28,6 +28,8 @@ PARAMS  = OPTIONS['params']
 SAMPLE_RATE = DEFAULT.get('sample_rate', 48000)
 SPEAKER_V3 = DEFAULT.get('speaker', 'xenia')
 
+
+
 # Экраинируем невоспроизводимые символы 
 def fecran(txt):
     for i in '[]{}|':
@@ -64,12 +66,25 @@ def fabr(txt):
         txt = txt.replace(abr, f'<prosody rate="fast"> {aabara} </prosody>')
     return txt
 
-def fix(txt, *, num=True, trans=False, abr=True):
+def fflow(txt, *, num=True, trans=True, abr=True):
     if isinstance(txt, str):
         txt = fecran(txt)
         if trans: txt = ftrans(txt)
         if abr:   txt = fabr(txt)
     if num: txt = fnum(txt)
+    return txt
+
+def fix(txt, ssml=False):
+    if ssml:
+        subs = re.split('(\</?[^\>]+\>)', str(txt))
+        for i, sub in enumerate(subs):
+            if re.match('(\</?[^\>]+\>)', sub):
+                pass
+            else:
+                subs[i] = fflow(sub)
+        txt = ''.join(subs)
+    else:    
+        txt = fflow(txt)
     return txt
            
 class V3:
@@ -140,16 +155,18 @@ class V3:
         
         if (ssml):
             #ssml  = '<speak>%s</speak>' % fix(text)
-            print('Синтез SSML:', fix(text))
-            self.model.save_wav(ssml_text=fix(text),
+            txt = fix(text, ssml=True)
+            print('Синтез SSML:', txt)
+            self.model.save_wav(ssml_text=txt,
                                 speaker=fspeaker,
                                 sample_rate=sample_rate,
                                 audio_path=fname,
                                 put_accent=accent,
                                 put_yo=yo)
         else:
-            print('Синтез Text:', fix(text))
-            self.model.save_wav(text=fix(text),
+            txt = fix(text)
+            print('Синтез Text:', txt)
+            self.model.save_wav(text=txt,
                                 speaker=fspeaker,
                                 sample_rate=sample_rate,
                                 audio_path=fname,

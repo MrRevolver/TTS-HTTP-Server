@@ -143,7 +143,7 @@ def num2text(num):
     else:
         return digit2text(
             int(num),
-            main_units=((u'', u'', u''), 'f'))
+            main_units=((u'', u'', u''), 'm'))
 
 if __name__ == '__main__':
     import sys
