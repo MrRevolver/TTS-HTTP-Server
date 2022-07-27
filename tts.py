@@ -40,10 +40,10 @@ def ftrans(txt):
 
 # Меняем цифры на числительные
 def fnum(txt):
-    x = re.findall('[0-9]+', str(txt))
+    x = re.findall('[0-9.,:]+', str(txt))
     x.sort(reverse=True)
     for i in x:
-        txt = str(txt).replace(i, num2text(int(i)))
+        txt = str(txt).replace(i, num2text(i))
     return txt
 
 # Обработка аббревиатуры
@@ -64,7 +64,7 @@ def fabr(txt):
         txt = txt.replace(abr, f'<prosody rate="fast"> {aabara} </prosody>')
     return txt
 
-def fix(txt, *, num=True, trans=True, abr=True):
+def fix(txt, *, num=True, trans=False, abr=True):
     if isinstance(txt, str):
         txt = fecran(txt)
         if trans: txt = ftrans(txt)

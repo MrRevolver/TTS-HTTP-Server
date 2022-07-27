@@ -84,7 +84,7 @@ def thousand(rest, sex):
     return plural, name
 
 
-def num2text(num, main_units=((u'', u'', u''), 'm')):
+def digit2text(num, main_units=((u'', u'', u''), 'm')):
     """
     http://ru.wikipedia.org/wiki/Gettext#.D0.9C.D0.BD.D0.BE.D0.B6.D0.B5.D1.81.\
     D1.82.D0.B2.D0.B5.D0.BD.D0.BD.D1.8B.D0.B5_.D1.87.D0.B8.D1.81.D0.BB.D0.B0_2
@@ -117,23 +117,40 @@ def decimal2text(value, places=2,
 
     integral, exp = str(value.quantize(q)).split('.')
     return u'{} {}'.format(
-        num2text(int(integral), int_units),
-        num2text(int(exp), exp_units))
+        digit2text(int(integral), int_units),
+        digit2text(int(exp), exp_units))
+
+def num2text(num):
+    if '.' in num or ',' in num:
+        num = num.replace(',', '.')
+        if len(num.split('.')[1]) == 1:
+            exp_units=((u'десятых', u'десятых', u'десятых'), 'f')
+        elif len(num.split('.')[1]) >= 2:
+            exp_units=((u'сотых', u'сотых', u'сотых'), 'f')
+        else:
+            exp_units=((u'', u'', u''), 'm')
+        return decimal2text(
+            decimal.Decimal(num),
+            #int_units=((u'штука', u'штуки', u'штук'), 'f'),
+            int_units=((u'целых', u'целых', u'целых'), 'f'),
+            exp_units=exp_units)
+    elif ':' in num:
+        num = num.replace(':', '.')
+        return decimal2text(
+            decimal.Decimal(num),
+            int_units=((u'час', u'часа', u'часов'), 'm'),
+            exp_units=((u'минута', u'минуты', u'минут'), 'f'))
+    else:
+        return digit2text(
+            int(num),
+            main_units=((u'', u'', u''), 'f'))
 
 if __name__ == '__main__':
     import sys
     if len(sys.argv) > 1:
         try:
             num = sys.argv[1]
-            if '.' in num:
-                print(decimal2text(
-                    decimal.Decimal(num),
-                    int_units=((u'штука', u'штуки', u'штук'), 'f'),
-                    exp_units=((u'кусок', u'куска', u'кусков'), 'm')))
-            else:
-                print(num2text(
-                    int(num),
-                    main_units=((u'штука', u'штуки', u'штук'), 'f')))
+            print (num2text (num))
         except ValueError:
             print (sys.stderr, "Invalid argument {}".format(sys.argv[1]))
         sys.exit()
