@@ -1,3 +1,5 @@
+## -*- coding: utf-8 -*-
+
 import os
 import torch
 import re
@@ -29,7 +31,6 @@ SAMPLE_RATE = DEFAULT.get('sample_rate', 48000)
 SPEAKER_V3 = DEFAULT.get('speaker', 'xenia')
 
 
-
 # Экраинируем невоспроизводимые символы 
 def fecran(txt):
     for i in '[]{}|':
@@ -42,7 +43,7 @@ def ftrans(txt):
 
 # Меняем цифры на числительные
 def fnum(txt):
-    x = re.findall('[0-9.,:]+', str(txt))
+    x = re.findall('[-+]?[0-9]*[.,:]?[0-9]+(?:[eE][-+]?[0-9]+)?', str(txt))
     x.sort(reverse=True)
     for i in x:
         txt = str(txt).replace(i, num2text(i))
@@ -105,13 +106,15 @@ class V3:
         if type(speaker) == str and self.speakers().count(speaker): return speaker
         return None
     
-    # Список голосов
+    # Получить список голосов
     def speakers(self):
         return sorted(self.model.speakers)
     
+    # Получить размер кэша
     def get_size_cach(self):
         return sum(os.path.getsize(DIR_CACH+os.sep+f) for f in os.listdir(DIR_CACH) if os.path.isfile(DIR_CACH+os.sep+f))
     
+    # Обновление кешированных файлов
     def rotate(self):
         size_cach = self.get_size_cach()
         mb = size_cach/1024/1024
@@ -145,18 +148,21 @@ class V3:
         bname = re.sub('[^\w_\. ]', '_', str(text))[:100]
         fspeaker = self.get_name(speaker)
         fname = os.path.join(DIR_CACH, f'{fspeaker}_{bname}.wav') if path is None else path
-        print('Кэш:', fname)
+        
         if os.path.isfile(fname):
             if rw: 
                 os.remove(fname)
             else:
                 Path(fname).touch()
+                print('Отдаём из кeша:', fname)
+                logger.info('Отдаём из кeша:', fname)
                 return fname
         
         if (ssml):
             #ssml  = '<speak>%s</speak>' % fix(text)
             txt = fix(text, ssml=True)
             print('Синтез SSML:', txt)
+            logger.info('Синтез SSML:', txt)
             self.model.save_wav(ssml_text=txt,
                                 speaker=fspeaker,
                                 sample_rate=sample_rate,
@@ -166,6 +172,7 @@ class V3:
         else:
             txt = fix(text)
             print('Синтез Text:', txt)
+            logger.info('Синтез SSML:', txt)
             self.model.save_wav(text=txt,
                                 speaker=fspeaker,
                                 sample_rate=sample_rate,

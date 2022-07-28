@@ -1,3 +1,5 @@
+## -*- coding: utf-8 -*-
+
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from cgi import parse_header, parse_multipart
@@ -14,7 +16,7 @@ FILE_INDEX = os.path.join('html', 'index.htm')
 def start(serverPort=80, hostName='localhost'):
 
     print("Сервер запущен. Ожидание соединения...")
-    logger.info("Сервер запущен. Ожидание соединения...") 
+    logger.info("Сервер запущен.") 
 
     class WebServer(BaseHTTPRequestHandler):
         with open(FILE_INDEX, 'r', encoding="utf-8") as f:
@@ -109,7 +111,7 @@ def start(serverPort=80, hostName='localhost'):
                 a = a[:-4]
                 li[a] = m
             for a, m in sorted(li.items(), key=lambda x: x[1], reverse=True):
-                cach += f'<li><a target=_blank href="/{a}">{a}</a></li>';
+                cach += f'<li><a target=_blank href="/{a}">{a}</a></li>'
             return cach
             
         def home_page(self):
@@ -130,8 +132,8 @@ def start(serverPort=80, hostName='localhost'):
                 postvars = parse_qs(encoded, encoding='utf-8')
             elif 'application/json' == ctype :
                 postvars = json.loads(encoded)
-            print("Получен POST запрос: " + json.dumps(postvars))
-            logger.info("Получен POST запрос: " + json.dumps(postvars)) #json_res.replace("\n", "").replace("\r", ""))
+            print("Получен POST запрос: " + json.dumps(postvars, ensure_ascii=False))
+            logger.info("Получен POST запрос: " + json.dumps(postvars, ensure_ascii=False))) #json_res.replace("\n", "").replace("\r", ""))
 
             for k, v in postvars.items():
                 if type(v) == list: v = v[0]

@@ -4,6 +4,8 @@ Changed on 13.03.2016 by Artem Tiumentcev
 
 @author: Sergey Prokhorov <me@seriyps.ru>
 '''
+## -*- coding: utf-8 -*-
+
 import decimal
 
 units = (
