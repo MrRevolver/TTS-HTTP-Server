@@ -133,7 +133,7 @@ def start(serverPort=80, hostName='localhost'):
             elif 'application/json' == ctype :
                 postvars = json.loads(encoded)
             print("Получен POST запрос: " + json.dumps(postvars, ensure_ascii=False))
-            logger.info("Получен POST запрос: " + json.dumps(postvars, ensure_ascii=False))) #json_res.replace("\n", "").replace("\r", ""))
+            logger.info("Получен POST запрос: " + json.dumps(postvars, ensure_ascii=False)) #json_res.replace("\n", "").replace("\r", ""))
 
             for k, v in postvars.items():
                 if type(v) == list: v = v[0]

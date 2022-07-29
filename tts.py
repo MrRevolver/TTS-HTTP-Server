@@ -20,6 +20,7 @@ if not os.path.isdir(DIR_CACH):
     os.mkdir(DIR_CACH)
     
 FILE_OPT  = os.path.join('options', 'options.yml')
+FILE_DICT = os.path.join('dict', 'dict.yml')
 
 with open(FILE_OPT, 'r', encoding="utf-8") as y:   
     OPTIONS = yaml.safe_load(y)
@@ -67,14 +68,31 @@ def fabr(txt):
         txt = txt.replace(abr, f'<prosody rate="fast"> {aabara} </prosody>')
     return txt
 
-def fflow(txt, *, num=True, trans=True, abr=True):
+# Словарь автозамен
+def wlegal(txt):
+    words = re.split('( |, |; )', txt)
+    #print(str(words))
+    ilegals = {}
+    if os.path.isfile(FILE_DICT):
+        with open(FILE_DICT, 'r', encoding="utf-8") as y:   
+            ilegals = yaml.safe_load(y) 
+        w = ilegals.get('word', {})
+        for i in range(len(words)):
+            if w.get(words[i].lower()):
+                words[i] = w[words[i].lower()]
+    return ''.join(words)
+
+# Запуск функций предварительной обработки
+def fflow(txt, *, num=True, trans=True, abr=True, word=True,):
     if isinstance(txt, str):
         txt = fecran(txt)
+        if word:  txt = wlegal(txt)
         if trans: txt = ftrans(txt)
         if abr:   txt = fabr(txt)
     if num: txt = fnum(txt)
     return txt
 
+# Экстракция тегов SSML
 def fix(txt, ssml=False):
     if ssml:
         subs = re.split('(\</?[^\>]+\>)', str(txt))
@@ -155,14 +173,14 @@ class V3:
             else:
                 Path(fname).touch()
                 print('Отдаём из кeша:', fname)
-                logger.info('Отдаём из кeша:', fname)
+                #logger.info('Отдаём из кeша:', fname)
                 return fname
         
         if (ssml):
             #ssml  = '<speak>%s</speak>' % fix(text)
             txt = fix(text, ssml=True)
             print('Синтез SSML:', txt)
-            logger.info('Синтез SSML:', txt)
+            #logger.info('Синтез SSML:', txt)
             self.model.save_wav(ssml_text=txt,
                                 speaker=fspeaker,
                                 sample_rate=sample_rate,
@@ -171,8 +189,8 @@ class V3:
                                 put_yo=yo)
         else:
             txt = fix(text)
-            print('Синтез Text:', txt)
-            logger.info('Синтез SSML:', txt)
+            print('Синтез:', txt)
+            #logger.info('Синтез:', txt)
             self.model.save_wav(text=txt,
                                 speaker=fspeaker,
                                 sample_rate=sample_rate,
